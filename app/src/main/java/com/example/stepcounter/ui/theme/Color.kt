@@ -6,12 +6,14 @@ import androidx.compose.ui.graphics.Color
 val Primary = Color(0xFF3B82F6)
 val PrimaryLight = Color(0xFF60A5FA)
 val PrimaryDark = Color(0xFF2563EB)
-val PrimaryContainer = Color(0xFFDBEAFE)
+val PrimaryContainer = Color(0xFFDBEAFE)       // light mode
+val PrimaryContainerDark = Color(0xFF1A2A4A)   // dark mode
 
 // Accent — Orange/Amber
 val Accent = Color(0xFFF97316)
 val AccentLight = Color(0xFFFB923C)
-val AccentContainer = Color(0xFFFFEDD5)
+val AccentContainer = Color(0xFFFFEDD5)        // light mode
+val AccentContainerDark = Color(0xFF3A1F0A)    // dark mode
 
 // Backgrounds
 val BackgroundLight = Color(0xFFF8F9FA)

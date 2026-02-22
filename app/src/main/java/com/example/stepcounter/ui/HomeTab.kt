@@ -27,8 +27,12 @@ import androidx.compose.ui.unit.sp
 import com.example.stepcounter.data.entity.UserStepsEntity
 import com.example.stepcounter.ui.theme.Accent
 import com.example.stepcounter.ui.theme.AccentContainer
+import com.example.stepcounter.ui.theme.AccentContainerDark
+import com.example.stepcounter.ui.theme.AccentLight
 import com.example.stepcounter.ui.theme.Primary
 import com.example.stepcounter.ui.theme.PrimaryContainer
+import com.example.stepcounter.ui.theme.PrimaryContainerDark
+import com.example.stepcounter.ui.theme.PrimaryLight
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -79,40 +83,39 @@ fun HomeTab(steps: Int, history: List<UserStepsEntity>) {
 
             Spacer(Modifier.height(24.dp))
 
-            // Quick Stats Grid
+            // Quick Stats Grid — derive dark mode from the actual applied theme, not system setting
+            val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                val accentBg = if (isDark) AccentContainerDark else AccentContainer
+                val primaryBg = if (isDark) PrimaryContainerDark else PrimaryContainer
                 QuickStatCard(
                     modifier = Modifier.weight(1f),
-                    gradient = Brush.linearGradient(
-                        listOf(AccentContainer, AccentContainer.copy(alpha = 0.4f))
-                    ),
-                    borderColor = Accent.copy(alpha = 0.3f),
-                    iconTint = Accent,
+                    gradient = Brush.linearGradient(listOf(accentBg, accentBg.copy(alpha = 0.5f))),
+                    borderColor = Accent.copy(alpha = if (isDark) 0.4f else 0.3f),
+                    iconTint = if (isDark) AccentLight else Accent,
                     icon = Icons.Default.Favorite,
                     label = "Calories",
                     value = "${(steps * 0.04f).toInt()} kcal",
                     subtitle = "of ${(goal * 0.04f).toInt()} goal",
                     progressFraction = (steps * 0.04f / (goal * 0.04f)).coerceIn(0f, 1f),
-                    progressColor = Accent
+                    progressColor = if (isDark) AccentLight else Accent
                 )
                 QuickStatCard(
                     modifier = Modifier.weight(1f),
-                    gradient = Brush.linearGradient(
-                        listOf(PrimaryContainer, PrimaryContainer.copy(alpha = 0.4f))
-                    ),
-                    borderColor = Primary.copy(alpha = 0.3f),
-                    iconTint = Primary,
+                    gradient = Brush.linearGradient(listOf(primaryBg, primaryBg.copy(alpha = 0.5f))),
+                    borderColor = Primary.copy(alpha = if (isDark) 0.4f else 0.3f),
+                    iconTint = if (isDark) PrimaryLight else Primary,
                     icon = Icons.Default.KeyboardArrowUp,
                     label = "Distance",
                     value = "${"%.1f".format(steps * 0.000762f)} km",
                     subtitle = "+8% from avg",
                     progressFraction = null,
-                    progressColor = Primary
+                    progressColor = if (isDark) PrimaryLight else Primary
                 )
             }
 
@@ -439,3 +442,6 @@ private fun InsightsCard(steps: Int, goal: Int) {
         }
     }
 }
+
+private fun Color.luminance(): Float =
+    0.2126f * red + 0.7152f * green + 0.0722f * blue

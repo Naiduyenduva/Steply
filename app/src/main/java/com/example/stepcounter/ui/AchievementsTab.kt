@@ -20,8 +20,12 @@ import androidx.compose.ui.unit.sp
 import com.example.stepcounter.data.entity.UserStepsEntity
 import com.example.stepcounter.ui.theme.Accent
 import com.example.stepcounter.ui.theme.AccentContainer
+import com.example.stepcounter.ui.theme.AccentContainerDark
+import com.example.stepcounter.ui.theme.AccentLight
 import com.example.stepcounter.ui.theme.Primary
 import com.example.stepcounter.ui.theme.PrimaryContainer
+import com.example.stepcounter.ui.theme.PrimaryContainerDark
+import com.example.stepcounter.ui.theme.PrimaryLight
 
 data class Badge(
     val title: String,
@@ -75,6 +79,9 @@ fun AchievementsTab(history: List<UserStepsEntity>) {
                 )
             }
 
+            val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+            val primaryBg = if (isDark) PrimaryContainerDark else PrimaryContainer
+            val accentBg = if (isDark) AccentContainerDark else AccentContainer
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -84,22 +91,22 @@ fun AchievementsTab(history: List<UserStepsEntity>) {
                     title = "Current Streak",
                     value = "$currentStreak",
                     unit = "days",
-                    gradient = Brush.linearGradient(listOf(PrimaryContainer, PrimaryContainer.copy(alpha = 0.3f))),
-                    borderColor = Primary.copy(alpha = 0.3f),
-                    valueColor = Primary,
+                    gradient = Brush.linearGradient(listOf(primaryBg, primaryBg.copy(alpha = 0.5f))),
+                    borderColor = Primary.copy(alpha = if (isDark) 0.4f else 0.3f),
+                    valueColor = if (isDark) PrimaryLight else Primary,
                     icon = Icons.Default.Favorite,
-                    iconTint = Accent
+                    iconTint = if (isDark) AccentLight else Accent
                 )
                 StreakCard(
                     modifier = Modifier.weight(1f),
                     title = "Longest Streak",
                     value = "$longestStreak",
                     unit = "days",
-                    gradient = Brush.linearGradient(listOf(AccentContainer, AccentContainer.copy(alpha = 0.3f))),
-                    borderColor = Accent.copy(alpha = 0.3f),
-                    valueColor = Accent,
+                    gradient = Brush.linearGradient(listOf(accentBg, accentBg.copy(alpha = 0.5f))),
+                    borderColor = Accent.copy(alpha = if (isDark) 0.4f else 0.3f),
+                    valueColor = if (isDark) AccentLight else Accent,
                     icon = Icons.Default.EmojiEvents,
-                    iconTint = Accent
+                    iconTint = if (isDark) AccentLight else Accent
                 )
             }
 
@@ -290,3 +297,6 @@ private fun computeStreak(history: List<UserStepsEntity>): Int {
     }
     return streak
 }
+
+private fun androidx.compose.ui.graphics.Color.luminance(): Float =
+    0.2126f * red + 0.7152f * green + 0.0722f * blue
