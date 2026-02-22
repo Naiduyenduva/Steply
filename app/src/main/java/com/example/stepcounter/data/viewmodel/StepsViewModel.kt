@@ -2,6 +2,7 @@ package com.example.stepcounter.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.stepcounter.data.dao.UserStepsDao
 import com.example.stepcounter.data.entity.UserStepsEntity
@@ -16,10 +17,12 @@ class StepsViewModel(
     val history = mutableStateOf<List<UserStepsEntity>>(emptyList())
 
     fun loadUser(username: String) {
-        val currentDate = LocalDate.now().toString()
+        val today = LocalDate.now().toString()
+
         viewModelScope.launch {
-            val user = dao.getUserStepsForDate(username, currentDate)
-            steps.value = user?.stepCount ?: 0
+            dao.getTodayStepsFlow(username, today).collect {
+            steps.value = it?.stepCount ?: 0
+            }
         }
     }
 
@@ -39,8 +42,16 @@ class StepsViewModel(
 
     fun loadHistory(username: String) {
         viewModelScope.launch {
-            val allSteps = dao.getAllStepsForUser(username)
-            history.value = allSteps
+            dao.getAllStepsForUser(username).collect {
+                history.value = it
+            }
+        }
+    }
+
+    class Factory(private val dao: UserStepsDao) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return StepsViewModel(dao) as T
         }
     }
 }
